@@ -220,11 +220,14 @@ body {
    - 키보드와 함께 자연스럽게 올라감
    ======================================== */
 @media screen and (max-width: 480px) {
-  body {
+  html, body {
     background: #000000;
     padding: 0;
-    overflow: hidden;
+    margin: 0;
+    overflow: hidden !important;
     height: 100%;
+    position: fixed;
+    width: 100%;
   }
   
   /* CSS 변수로 viewport 높이 관리 */
@@ -243,6 +246,7 @@ body {
     border-radius: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   
   .device-label {
@@ -262,9 +266,10 @@ body {
     overflow: hidden;
   }
   
-  /* 키보드 열리면 아래로 정렬 */
+  /* 키보드 열리면 상단 정렬 */
   .device-frame.keyboard-open {
-    justify-content: flex-end;
+    justify-content: flex-start;
+    align-items: stretch;
   }
   
   .chat-container {
@@ -279,12 +284,12 @@ body {
     transition: max-height 0.2s ease, border-radius 0.2s ease;
   }
   
-  /* 키보드 열렸을 때 chat-container */
+  /* 키보드 열렸을 때 chat-container - 상단 고정 */
   .device-frame.keyboard-open .chat-container {
     flex: 1;
     max-height: 100%;
     min-height: 0;
-    border-radius: 50px 50px 0 0;
+    border-radius: 0;
   }
   
   /* messages 영역만 줄어들도록 */

@@ -414,7 +414,7 @@ class MetaballChat {
   /* ========================================
      📱 모바일 viewport 설정
      - visualViewport API로 실제 가용 높이 계산
-     - 키보드가 올라와도 chat-container 크기 유지
+     - 키보드가 올라와도 chat-container 상단 고정
      ======================================== */
   setupMobileViewport() {
     // 모바일 체크 (480px 이하)
@@ -426,6 +426,13 @@ class MetaballChat {
       
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       document.documentElement.style.setProperty('--viewport-height', `${vh}px`);
+    };
+    
+    // 스크롤 방지 함수
+    const preventScroll = () => {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
     };
     
     // 초기 설정
@@ -446,18 +453,27 @@ class MetaballChat {
         // 키보드가 100px 이상 올라왔으면 keyboard-open
         if (keyboardHeight > 100) {
           this.deviceFrame.classList.add('keyboard-open');
+          // 스크롤 방지
+          preventScroll();
         }
       });
       
-      // scroll 이벤트 (iOS에서 필요)
+      // scroll 이벤트 - 스크롤 발생 시 원위치
       window.visualViewport.addEventListener('scroll', () => {
         if (!isMobile()) return;
+        preventScroll();
         setViewportHeight();
       });
     }
     
     // 일반 resize 이벤트 (fallback)
     window.addEventListener('resize', setViewportHeight);
+    
+    // 전역 스크롤 방지 (모바일)
+    if (isMobile()) {
+      document.addEventListener('scroll', preventScroll, { passive: false });
+      window.addEventListener('scroll', preventScroll, { passive: false });
+    }
   }
 }
 
