@@ -118,8 +118,8 @@ body {
   /* 🎨 모서리 둥글기 */
   border-radius: 60px;
   
-  /* 애니메이션 전환 */
-  transition: height 0.4s ease, border-radius 0.4s ease;
+  /* 애니메이션 전환 - border-radius 제외 */
+  transition: height 0.4s ease;
 }
 
 /* 키보드가 열렸을 때 - 확장된 상태 */
@@ -216,8 +216,8 @@ body {
 
 /* ========================================
    📱 모바일 화면 (너비 480px 이하)
-   - chat-container 가운데 고정
-   - 키보드와 함께 자연스럽게 올라감
+   - 처음부터 상단 고정, 화면 가득
+   - 키보드 올라오면 높이만 줄어듦
    ======================================== */
 @media screen and (max-width: 480px) {
   html, body {
@@ -261,39 +261,24 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
-  
-  /* 키보드 열리면 상단 정렬 */
-  .device-frame.keyboard-open {
-    justify-content: flex-start;
+    justify-content: flex-start;  /* 처음부터 상단 고정 */
     align-items: stretch;
+    overflow: hidden;
   }
   
   .chat-container {
     width: 100%;
-    flex: 0 1 auto;
-    min-height: 300px;
-    max-height: 85%;
-    border-radius: 60px;
+    flex: 1;                      /* 화면 가득 */
+    min-height: 0;
+    border-radius: 0 !important;  /* 고정 - 절대 변하지 않음 */
     margin: 0;
     display: flex;
     flex-direction: column;
-    transition: max-height 0.2s ease, border-radius 0.2s ease;
+    transition: none;             /* 모바일에서 transition 제거 */
   }
   
-  /* 키보드 열렸을 때 chat-container - 상단 고정 */
-  .device-frame.keyboard-open .chat-container {
-    flex: 1;
-    max-height: 100%;
-    min-height: 0;
-    border-radius: 0;
-  }
-  
-  /* messages 영역만 줄어들도록 */
-  .device-frame.keyboard-open .messages-wrapper {
+  /* messages 영역이 유연하게 줄어듦 */
+  .messages-wrapper {
     flex: 1;
     min-height: 0;
     overflow: hidden;
@@ -303,10 +288,8 @@ body {
     display: flex;
     flex-shrink: 0;
     padding: 12px 20px;
-    background: transparent;
-    position: static;
+    background: #000000;
     width: 100%;
-    margin: 2px 0;
   }
   
   /* 키보드 열리면 footer 숨김 */

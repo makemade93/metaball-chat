@@ -286,20 +286,15 @@ class MetaballChat {
      🌉 브릿지 업데이트 함수 (간단한 규칙)
      - 받는 메시지는 3개씩 그룹: 짧은 것 → 긴 것 → 짧은 것
      - 패턴: bridge-down → (없음) → bridge-up → bridge-down → ...
+     - 이미 적용된 bridge는 유지 (깜빡임 방지)
      ======================================== */
   updateBridges() {
-    // 1. 모든 received 버블의 bridge 관련 클래스 초기화
-    document.querySelectorAll('.bubble.received.bridge, .bubble.received.bridge-up, .bubble.received.bridge-down').forEach(bubble => {
-      bubble.classList.remove('bridge', 'bridge-up', 'bridge-down', 'bridge-visible');
-      bubble.style.removeProperty('--bridge-size');
-    });
-    
-    // 2. 모든 merged된 received 버블 찾기
+    // 1. 모든 merged된 received 버블 찾기
     const allReceivedBubbles = Array.from(document.querySelectorAll('.bubble.received.merged'));
     
     if (allReceivedBubbles.length < 2) return;
     
-    // 3. 연속된 그룹으로 분리 (DOM 순서 기준)
+    // 2. 연속된 그룹으로 분리 (DOM 순서 기준)
     const groups = [];
     let currentGroup = [allReceivedBubbles[0]];
     
@@ -322,10 +317,10 @@ class MetaballChat {
       groups.push(currentGroup);
     }
     
-    // 브릿지가 추가된 버블들을 저장
-    const bridgeBubbles = [];
+    // 새로 브릿지가 추가된 버블들만 저장
+    const newBridgeBubbles = [];
     
-    // 4. 각 그룹에서 브릿지 처리 (새 규칙)
+    // 3. 각 그룹에서 브릿지 처리
     // 3개씩 그룹: 짧은 것(0) → 긴 것(1) → 짧은 것(2)
     // 패턴: bridge-down(0) → 없음(1) → bridge-up(2) → 반복
     groups.forEach(group => {
@@ -333,17 +328,20 @@ class MetaballChat {
         const bubble = group[i];
         const positionInTriple = i % 3;  // 0, 1, 2 반복
         
+        // 이미 bridge가 적용된 버블은 스킵
+        if (bubble.classList.contains('bridge-visible')) continue;
+        
         if (positionInTriple === 0 && i + 1 < group.length) {
           // 첫 번째 버블 (짧은 것): bridge-down (아래 버블 방향으로)
           const currentWidth = this.getBubbleWidth(bubble);
           const nextWidth = this.getBubbleWidth(group[i + 1]);
           const diff = Math.abs(currentWidth - nextWidth);
           
-          if (diff >= 10) {
+          if (diff >= 10 && !bubble.classList.contains('bridge')) {
             const bridgeSize = Math.min(diff, 36) * 0.9;
             bubble.classList.add('bridge', 'bridge-down');
             bubble.style.setProperty('--bridge-size', `${bridgeSize}px`);
-            bridgeBubbles.push(bubble);
+            newBridgeBubbles.push(bubble);
           }
         } else if (positionInTriple === 2 && i - 1 >= 0) {
           // 세 번째 버블 (짧은 것): bridge-up (위 버블 방향으로)
@@ -351,23 +349,25 @@ class MetaballChat {
           const prevWidth = this.getBubbleWidth(group[i - 1]);
           const diff = Math.abs(currentWidth - prevWidth);
           
-          if (diff >= 10) {
+          if (diff >= 10 && !bubble.classList.contains('bridge')) {
             const bridgeSize = Math.min(diff, 36) * 0.9;
             bubble.classList.add('bridge', 'bridge-up');
             bubble.style.setProperty('--bridge-size', `${bridgeSize}px`);
-            bridgeBubbles.push(bubble);
+            newBridgeBubbles.push(bubble);
           }
         }
         // positionInTriple === 1 은 긴 버블이므로 브릿지 없음
       }
     });
     
-    // 5. 약간의 딜레이 후 브릿지 서서히 나타나게
-    setTimeout(() => {
-      bridgeBubbles.forEach(bubble => {
-        bubble.classList.add('bridge-visible');
-      });
-    }, 50);
+    // 4. 새로 추가된 브릿지만 서서히 나타나게
+    if (newBridgeBubbles.length > 0) {
+      setTimeout(() => {
+        newBridgeBubbles.forEach(bubble => {
+          bubble.classList.add('bridge-visible');
+        });
+      }, 50);
+    }
   }
 
   /* ========================================
