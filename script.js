@@ -414,19 +414,15 @@ class MetaballChat {
   /* ========================================
      📱 모바일 viewport 설정
      - visualViewport API로 실제 가용 높이 계산
-     - 키보드가 올라와도 chat-container 상단 고정
+     - 키보드 애니메이션과 동기화
      ======================================== */
   setupMobileViewport() {
     // 모바일 체크 (480px 이하)
     const isMobile = () => window.innerWidth <= 480;
     
-    // CSS 변수로 viewport 높이 설정
-    const setViewportHeight = () => {
-      if (!isMobile()) return;
-      
-      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      document.documentElement.style.setProperty('--viewport-height', `${vh}px`);
-    };
+    // 상태 변수
+    let lastHeight = 0;
+    let debounceTimer = null;
     
     // 스크롤 방지 함수
     const preventScroll = () => {
@@ -435,8 +431,34 @@ class MetaballChat {
       document.documentElement.scrollTop = 0;
     };
     
+    // CSS 변수 업데이트 (debounce로 키보드 애니메이션 완료 후 적용)
+    const updateViewportHeight = (immediate = false) => {
+      if (!isMobile()) return;
+      
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      
+      // 변화가 없으면 무시
+      if (vh === lastHeight) return;
+      
+      // 즉시 업데이트 (초기화 시)
+      if (immediate) {
+        lastHeight = vh;
+        document.documentElement.style.setProperty('--viewport-height', `${vh}px`);
+        return;
+      }
+      
+      // debounce - 키보드 애니메이션 중 마지막 값만 적용
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        lastHeight = vh;
+        document.documentElement.style.setProperty('--viewport-height', `${vh}px`);
+      }, 50);  // 50ms debounce - CSS transition이 부드럽게 처리
+    };
+    
     // 초기 설정
-    setViewportHeight();
+    if (isMobile()) {
+      updateViewportHeight(true);
+    }
     
     if (window.visualViewport) {
       // visualViewport resize 이벤트
@@ -448,12 +470,11 @@ class MetaballChat {
         const keyboardHeight = windowHeight - viewportHeight;
         
         // CSS 변수 업데이트
-        document.documentElement.style.setProperty('--viewport-height', `${viewportHeight}px`);
+        updateViewportHeight();
         
         // 키보드가 100px 이상 올라왔으면 keyboard-open
         if (keyboardHeight > 100) {
           this.deviceFrame.classList.add('keyboard-open');
-          // 스크롤 방지
           preventScroll();
         }
       });
@@ -462,12 +483,13 @@ class MetaballChat {
       window.visualViewport.addEventListener('scroll', () => {
         if (!isMobile()) return;
         preventScroll();
-        setViewportHeight();
       });
     }
     
     // 일반 resize 이벤트 (fallback)
-    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('resize', () => {
+      if (isMobile()) updateViewportHeight();
+    });
     
     // 전역 스크롤 방지 (모바일)
     if (isMobile()) {
