@@ -290,21 +290,9 @@ body {
     overflow: hidden;
   }
   
-  /* footer - chat-container 아래에 고정 */
+  /* 모바일에서 footer 숨김 */
   .footer {
-    display: flex;
-    flex-shrink: 0;
-    flex-grow: 0;
-    padding: 12px 20px;
-    background: #000000;
-    width: 100%;
-    position: relative;
-    z-index: 10;
-  }
-  
-  /* 키보드 열리면 footer 숨김 */
-  .device-frame.keyboard-open .footer {
-    display: none;
+    display: none !important;
   }
 }
 
