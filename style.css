@@ -216,40 +216,92 @@ body {
 
 /* ========================================
    📱 모바일 화면 (너비 480px 이하)
-   - 전체 화면으로 표시
+   - chat-container 가운데 고정
+   - 키보드와 함께 자연스럽게 올라감
    ======================================== */
 @media screen and (max-width: 480px) {
   body {
     background: #000000;
     padding: 0;
-    overflow: auto;           /* 모바일에서는 스크롤 허용 */
+    overflow: hidden;
+    /* iOS Safari 키보드 대응 */
+    height: 100dvh;
+    height: 100vh; /* fallback */
   }
   
   .device-container {
-    position: static;             /* fixed 포지션 해제 */
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 100vh;
-    transform: none !important;   /* 모바일에서 스케일링 비활성화 */
+    height: 100dvh;
+    height: 100vh; /* fallback */
+    transform: none !important;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
   }
   
   .device-label {
-    display: none;            /* 라벨 숨김 */
+    display: none;
   }
   
   .device-frame {
     width: 100%;
-    height: 100%;
-    border-radius: 140px;
+    flex: 1;
+    height: auto;
+    border-radius: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;    /* chat-container 가운데 정렬 */
+    align-items: center;
+  }
+  
+  /* 키보드 열리면 아래로 정렬 */
+  .device-frame.keyboard-open {
+    justify-content: flex-end;
+    padding-bottom: 0;
   }
   
   .chat-container {
-    border-radius: 0;
+    width: 100%;
+    height: auto;
+    min-height: 480px;
+    max-height: 85dvh;
+    max-height: 85vh; /* fallback */
+    flex: none;
+    border-radius: 60px;
+    margin: 0;
+    transition: all 0.3s ease;
+  }
+  
+  /* 키보드 열렸을 때 chat-container */
+  .device-frame.keyboard-open .chat-container {
+    max-height: 100%;
     height: 100%;
+    margin: 0;
   }
   
   .footer {
-    display: none;            /* 모바일에서 푸터 숨김 */
+    display: flex;
+    flex-shrink: 0;
+    padding: 12px 20px;
+    background: transparent;
+    position: static;
+    width: 100%;
+    margin: 2px 0;
+  }
+  
+  /* 키보드 열리면 footer 숨김 */
+  .device-frame.keyboard-open .footer {
+    display: none;
+  }
+  
+  /* 모바일 input 패딩 조절 */
+  .input-area input {
+    padding: 15px 10px 15px 24px !important;
   }
 }
 
@@ -719,7 +771,7 @@ body {
   display: flex;
   align-items: center;
   margin: 10px 30px 30px 30px;
-  padding: 12px 12px 12px 22px;   /* 🎨 내부 여백 - 수정 가능 */
+  padding: 12px 12px 12px 2px;   /* 🎨 내부 여백 - 수정 가능 */
   z-index: 10;
   border-radius: 50px;
   background: #F5F5F7;            /* 🎨 입력창 배경색 - 수정 가능 */

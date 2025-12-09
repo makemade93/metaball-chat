@@ -77,6 +77,22 @@ class MetaballChat {
         }
       }, 100);
     });
+    
+    /* ========================================
+       모바일 visualViewport 대응
+       - 실제 키보드가 올라올 때 viewport 크기 변화 감지
+       - iOS/Android 모두 대응
+       ======================================== */
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        // 키보드가 올라오면 viewport 높이가 줄어듦
+        const isKeyboardOpen = window.visualViewport.height < window.innerHeight * 0.75;
+        
+        if (isKeyboardOpen) {
+          this.deviceFrame.classList.add('keyboard-open');
+        }
+      });
+    }
 
     /* ========================================
        초기 메시지 추가
