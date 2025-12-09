@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- 브라우저 탭에 표시되는 제목 -->
+  <title>Metaball Chat UI</title>
+  
+  <!-- CSS 스타일시트 연결 -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ========================================
+       디바이스 컨테이너
+       - 디바이스 라벨 + 프레임을 감싸는 영역
+       ======================================== -->
+  <div class="device-container">
+    
+    <!-- ========================================
+         디바이스 프레임 (402x874px 고정)
+         - 검정 배경의 고정 크기 프레임
+         ======================================== -->
+    <div class="device-frame">
+      
+      <!-- ========================================
+           메인 채팅 컨테이너
+           - 실제 채팅 UI가 들어가는 영역
+           ======================================== -->
+      <div class="chat-container" >
+        
+        <!-- ========================================
+             상단 헤더 영역
+             - 새로고침 버튼 + 프로필 배치
+             ======================================== -->
+        <div class="header">
+          <!-- 새로고침 버튼 - 클릭하면 채팅 초기화 -->
+          <button class="refresh-btn" id="refreshBtn">
+            <img src="source/btn_reflesh.svg" alt="새로고침" />
+          </button>
+          
+          <!-- ========================================
+               프로필 영역
+               - 상대방 프로필 이미지와 이름 표시
+               ======================================== -->
+          <div class="profile-area">
+            <div class="profile-image-wrapper">
+              <!-- 프로필 이미지 -->
+              <img src="source/profile.png" alt="프로필" class="profile-image" />
+              <!-- 온라인 상태 표시 (초록색 점) -->
+              <span class="online-status"></span>
+            </div>
+            <!-- 프로필 이름 - 수정 가능 -->
+            <span class="profile-name">Cony</span>
+          </div>
+          
+          <!-- 빈 영역 (균형 맞추기 위함) -->
+          <div class="header-spacer"></div>
+        </div>
+        
+        <!-- 메타볼 효과를 그리는 SVG 캔버스 -->
+        <!-- 채팅 버블 사이의 연결 효과가 여기에 그려짐 -->
+        <!-- <svg class="metaball-svg" id="metaballSvg"></svg> */-->
+        
+        <!-- 채팅 메시지들이 표시되는 영역 -->
+        <div class="messages-wrapper">
+          <div class="messages-fade messages-fade-top"></div>
+          <div class="messages" id="messages"></div>
+          <div class="messages-fade messages-fade-bottom"></div>
+        </div>
+        
+        <!-- ========================================
+             메시지 입력 영역
+             - 텍스트 입력창과 전송 버튼
+             ======================================== -->
+        <div class="input-area">
+          <!-- 메시지 입력 필드 -->
+          <input type="text" id="messageInput" placeholder="메세지 보내기..." />
+          
+          <!-- 전송 버튼 - 클릭하면 메시지 전송 -->
+          <!-- 키보드 열림 시 아이콘 변경 (plus → send) -->
+          <button id="sendBtn">
+            <img src="source/btn_plus.svg" alt="추가" class="icon-plus" />
+            <img src="source/btn_send.svg" alt="전송" class="icon-send" />
+          </button>
+        </div>
+      </div>
+      
+      <!-- ========================================
+           하단 푸터 영역
+           - 시리즈 정보 및 제작자 표시
+           ======================================== -->
+      <div class="footer">
+        <span class="footer-left">
+          <span class="footer-dot"></span>
+          Creative UI Series 01
+        </span>
+        <span class="footer-right">
+          <span class="footer-arrow">›</span>
+          <a href="#" class="footer-link">Created by Ki</a>
+        </span>
+      </div>
+      
+      <!-- ========================================
+           가상 키보드 (PC용)
+           - input focus 시 표시
+           ======================================== -->
+      <div class="virtual-keyboard">
+        <img src="source/keyboard.png" alt="키보드" />
+      </div>
+    </div>
+  </div>
+
+  <!-- GSAP 애니메이션 라이브러리 (CDN에서 불러옴) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  
+  <!-- 메인 JavaScript 파일 -->
+  <script src="script.js"></script>
+</body>
+</html>

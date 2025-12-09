@@ -1,0 +1,903 @@
+/* ========================================
+   전역 리셋 스타일
+   - 모든 요소의 기본 margin, padding 제거
+   - box-sizing을 border-box로 설정
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   페이지 전체 배경 설정
+   - 배경색: 회색 (#f0f0f0)
+   - 화면 중앙에 디바이스 프레임 배치
+   ======================================== */
+body {
+  /* 폰트 설정 - 시스템 기본 폰트 사용 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* 🎨 배경색 - 회색 */
+  background: #f0f0f0;
+  
+  /* 화면 전체 크기 */
+  width: 100vw;
+  height: 100vh;
+  
+  /* 스케일링 시 스크롤 방지 */
+  overflow: hidden;
+}
+
+/* ========================================
+   디바이스 컨테이너
+   - 라벨 + 프레임을 감싸는 영역
+   - 화면에 안 맞을 경우 자동 축소
+   - 항상 화면 정중앙에 위치
+   ======================================== */
+.device-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 5px solid black;
+  border-radius: 55px;
+  
+  /* 🎨 항상 화면 정중앙에 위치 */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  
+  /* 🎨 반응형 스케일링 + 중앙 정렬 */
+  --scale: 1;
+  transform: translate(-50%, -50%) scale(var(--scale));
+  transition: transform 0.3s ease;
+}
+
+/* =======================================fdz=
+   디바이스 라벨
+   - 프레임 위에 표시되는 텍스트
+   ======================================== */
+.device-label {
+  color: #666;                /* 🎨 글자 색상 - 수정 가능 */
+  font-size: 14px;            /* 🎨 글자 크기 - 수정 가능 */
+  margin-bottom: 8px;         /* 프레임과의 간격 */
+}
+
+/* ========================================
+   📱 디바이스 프레임 (402x874px 고정)
+   - 검정 배경의 고정 크기 프레임
+   ======================================== */
+.device-frame {
+  /* 🎨 고정 크기 설정 (402x874px) */
+  width: 402px;
+  height: 874px;
+  border-radius: 50px !important;
+  
+  /* 🎨 배경색 - 검정 */
+  background: #000000;
+  
+  /* 내부 레이아웃 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  /* 🎨 초기 상태 - 가운데 정렬을 위한 padding */
+  padding-top: 170px;         /* 위쪽 여백으로 가운데 효과 - 수정 가능 */
+  
+  /* 키보드가 들어올 공간 확보 */
+  overflow: hidden;
+  
+  /* 애니메이션 전환 */
+  transition: padding-top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 키보드가 열렸을 때 - 위로 올라감 */
+.device-frame.keyboard-open {
+  padding-top: 0;             /* 위로 이동 */
+}
+
+/* ========================================
+   채팅 컨테이너 (채팅 UI 영역)
+   - 디바이스 프레임 안의 흰색 채팅 영역
+   ======================================== */
+.chat-container {
+  /* 🎨 배경색 - 흰색 */
+  background: #ffffff;
+  
+  /* 🎨 초기 크기 설정 - 작은 상태 */
+  width: 100%;
+  height: 520px;              /* 초기 높이 - 수정 가능 */
+  flex: none;                 /* flex 비활성화 */
+  
+  /* 위치 및 레이아웃 */
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  /* 🎨 모서리 둥글기 */
+  border-radius: 60px;
+  
+  /* 애니메이션 전환 */
+  transition: height 0.4s ease, border-radius 0.4s ease;
+}
+
+/* 키보드가 열렸을 때 - 확장된 상태 */
+.device-frame.keyboard-open .chat-container {
+  height: 520px;              /* 키보드 공간 확보 */
+  border-radius: 50px 50px 50px 50px;  /* 상단 둥글기 제거 */
+}
+
+/* ========================================
+   하단 푸터 영역
+   - 시리즈 정보 및 제작자 표시
+   ======================================== */
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 25px;
+  color: #888;                /* 글자색 - 수정 가능 */
+  font-size: 12px;            /* 글자 크기 - 수정 가능 */
+}
+
+/* ========================================
+   가상 키보드 (PC용)
+   - input focus 시 표시되는 키보드 이미지
+   - 아래에서 위로 올라오는 애니메이션
+   ======================================== */
+.virtual-keyboard {
+  width: 100%;
+  margin-top: auto;           /* 바닥에 붙이기 */
+  
+  /* 🎨 초기 상태 - 아래에 숨겨진 상태 */
+  opacity: 0;
+  transform: translateY(100%);  /* 완전히 아래로 숨김 */
+  
+  /* 🎨 부드러운 애니메이션 - 커스텀 이징 */
+  transition: 
+    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.virtual-keyboard img {
+  width: 100%;
+  display: block;
+}
+
+/* 키보드가 열렸을 때 - 아래에서 위로 올라옴 */
+.device-frame.keyboard-open .virtual-keyboard {
+  opacity: 1;
+  transform: translateY(0);   /* 원래 위치로 */
+}
+
+/* 모바일에서는 가상 키보드 숨김 (실제 키보드 사용) */
+@media screen and (max-width: 480px) {
+  .virtual-keyboard {
+    display: none;
+  }
+}
+
+.footer-left {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-dot {
+  width: 8px;
+  height: 8px;
+  background: #c8ff00;        /* 점 색상 - 수정 가능 */
+  border-radius: 50%;
+}
+
+.footer-right {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-arrow {
+  color: #c8ff00;             /* 화살표 색상 - 수정 가능 */
+}
+
+.footer-link {
+  color: #888;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer-link:hover {
+  color: #fff;
+}
+
+/* ========================================
+   📱 모바일 화면 (너비 480px 이하)
+   - 전체 화면으로 표시
+   ======================================== */
+@media screen and (max-width: 480px) {
+  body {
+    background: #000000;
+    padding: 0;
+    overflow: auto;           /* 모바일에서는 스크롤 허용 */
+  }
+  
+  .device-container {
+    position: static;             /* fixed 포지션 해제 */
+    width: 100%;
+    height: 100vh;
+    transform: none !important;   /* 모바일에서 스케일링 비활성화 */
+  }
+  
+  .device-label {
+    display: none;            /* 라벨 숨김 */
+  }
+  
+  .device-frame {
+    width: 100%;
+    height: 100%;
+    border-radius: 140px;
+    padding: 0;
+  }
+  
+  .chat-container {
+    border-radius: 0;
+    height: 100%;
+  }
+  
+  .footer {
+    display: none;            /* 모바일에서 푸터 숨김 */
+  }
+}
+
+/* ========================================
+   상단 헤더 영역
+   - 새로고침 버튼 + 프로필 배치
+   ======================================== */
+.header {
+  padding: 21px 31px 0 31px;  /* 내부 여백 */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 10;
+}
+
+/* 헤더 빈 공간 (균형 맞추기) */
+.header-spacer {
+  width: 40px;                /* 새로고침 버튼과 같은 너비 */
+}
+
+/* ========================================
+   새로고침 버튼 스타일
+   ======================================== */
+
+
+.refresh-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  margin-top: 10px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(0deg);
+  /* 오버슈트 느낌 나는 커스텀 이징 */
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 새로고침 버튼 호버 효과 */
+/* hover 시 90도까지 (cubic-bezier가 93도 정도까지 갔다가 90으로 복귀시켜줌) */
+.refresh-btn:hover {
+  opacity: 0.7;
+  transform: rotate(90deg);
+}
+
+/* 새로고침 버튼 클릭 효과 */
+.refresh-btn:active {
+  transform: scale(0.9);
+  transform: rotate(110deg);
+}
+
+/* 새로고침 버튼 아이콘 */
+.refresh-btn img {
+  width: 36px;
+  height: 36px;
+}
+
+/* ========================================
+   프로필 영역
+   - 상대방 프로필 이미지와 이름 표시
+   ======================================== */
+.profile-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.profile-area:hover{
+  background-color: #F5F5F7;
+}
+
+/* 프로필 이미지 래퍼 (온라인 상태 점 위치 기준) */
+.profile-image-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* 프로필 이미지 */
+.profile-image {
+  width: 45px;                /* 🎨 프로필 이미지 크기 - 수정 가능 */
+  height: 45px;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.profile-image:hover{
+  transform: scale(1.1); 
+  transition: transform 0.6s ease;
+}
+
+/* 온라인 상태 표시 (초록색 점) */
+.online-status {
+  position: absolute;
+  top: 0.5px;
+  right: 0.5px;
+  width: 10px;                /* 🎨 점 크기 - 수정 가능 */
+  height: 10px;
+  background: #4ade80;        /* 🎨 온라인 색상 (초록) - 수정 가능 */
+  border-radius: 50%;
+}
+
+/* 프로필 이름 */
+.profile-name {
+  margin-top: 2px;
+  font-size: 15px;            /* 🎨 글자 크기 - 수정 가능 */
+  font-weight: 500;
+  color: #000;                /* 🎨 글자 색상 - 수정 가능 */
+}
+
+/* ========================================
+   메타볼 SVG 캔버스
+   - 채팅 버블 연결 효과를 그리는 영역
+   ======================================== */
+.metaball-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ========================================
+   메시지 영역 래퍼
+   - 스크롤 페이드 효과를 위한 컨테이너
+   ======================================== */
+.messages-wrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+   메시지 스크롤 페이드 효과
+   - 상단/하단 경계를 부드럽게 처리
+   - 스크롤이 있을 때만 표시
+   ======================================== */
+.messages-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 16px;               /* 🎨 페이드 높이 - 수정 가능 */
+  pointer-events: none;       /* 클릭 통과 */
+  z-index: 5;
+  opacity: 0;                 /* 기본: 숨김 */
+  transition: opacity 0.3s ease;
+}
+
+/* 스크롤이 있을 때만 페이드 표시 */
+.messages-wrapper.has-scroll .messages-fade {
+  opacity: 1;
+}
+
+.messages-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, #ffffff 0%, transparent 100%);
+}
+
+.messages-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, #ffffff 0%, transparent 100%);
+}
+
+/* ========================================
+   메시지 영역
+   - 채팅 버블들이 표시되는 스크롤 영역
+   ======================================== */
+.messages {
+  flex: 1;
+  padding: 0 20px;              /* 내부 여백 - 수정 가능 */
+  overflow-y: auto;
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* IE/Edge */
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;                   /* 버블 간 기본 간격 - 수정 가능 */
+}
+.messages::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   채팅 버블 기본 스타일
+   - 모든 버블에 공통 적용
+   ======================================== */
+.bubble {
+  max-width: 70%;
+  padding: 14px 22px;
+  border-radius: 30px;
+  font-size: 22px;
+  line-height: 1.4;
+  position: relative;
+  z-index: 2;
+}
+
+/* ========================================
+   보낸 메시지 (오른쪽 정렬)
+   - 형광 연두색 배경
+   - 초기에는 모든 R값이 있음!
+   ======================================== */
+.bubble.sent {
+  align-self: flex-end;
+  
+  /* 🎨 보낸 메시지 색상 */
+  background: #c8ff00;
+  color: #000;
+  
+  /* 🎨 애니메이션 전환 (Chrome 호환) */
+  -webkit-transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ========================================
+   받은 메시지 (왼쪽 정렬)
+   - 밝은 회색 배경
+   - 초기에는 모든 R값이 있음!
+   ======================================== */
+.bubble.received {
+  align-self: flex-start;
+  
+  /* 🎨 받은 메시지 색상 */
+  background: #F5F5F7;
+  color: #000;
+  
+  /* 🎨 애니메이션 전환 (Chrome 호환) */
+  -webkit-transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ========================================
+   연속된 버블 간격 (초기 상태)
+   - 합쳐지기 전에는 간격이 있음
+   ======================================== */
+.bubble.sent + .bubble.sent,
+.bubble.received + .bubble.received {
+  margin-top: 10px;
+}
+
+/* ========================================
+   🎨 리퀴드 메타볼 효과
+   - 버블이 합쳐질 때의 스타일
+   - 1초 후 자동으로 적용됨
+   ======================================== */
+
+/* 합쳐진 버블들 - 완전히 붙음! (간격 0) */
+.bubble.merged + .bubble.merged {
+  margin-top: 0 !important;
+  margin-bottom: 0;
+}
+
+/* ========================================
+   받은 메시지 (received) 리퀴드 효과
+   - 왼쪽 면이 합쳐짐
+   ======================================== */
+
+/* 첫 번째 버블 - 좌측 하단 radius 제거 */
+.bubble.received.merged-first {
+  border-bottom-left-radius: 0px;
+  -webkit-animation: mergeFlashReceived 0.6s ease-out;
+  animation: mergeFlashReceived 0.6s ease-out;
+}
+
+/* 중간 버블 - 좌측 radius 모두 제거 */
+.bubble.received.merged-middle {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  -webkit-animation: mergeFlashReceived 0.6s ease-out;
+  animation: mergeFlashReceived 0.6s ease-out;
+}
+
+/* 마지막 버블 - 좌측 상단 radius 제거 */
+.bubble.received.merged-last {
+  border-top-left-radius: 0px;
+  margin-bottom: 15px !important;
+  -webkit-animation: mergeFlashReceived 0.6s ease-out;
+  animation: mergeFlashReceived 0.6s ease-out;
+}
+
+/* ========================================
+   보낸 메시지 (sent) 리퀴드 효과
+   - 오른쪽 면이 합쳐짐
+   ======================================== */
+
+/* 첫 번째 버블 - 우측 하단 radius 제거 */
+.bubble.sent.merged-first {
+  border-bottom-right-radius: 0px;
+  -webkit-animation: mergeFlashSent 0.6s ease-out;
+  animation: mergeFlashSent 0.6s ease-out;
+}
+
+/* 중간 버블 - 우측 radius 모두 제거 */
+.bubble.sent.merged-middle {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px ;
+  -webkit-animation: mergeFlashSent 0.6s ease-out;
+  animation: mergeFlashSent 0.6s ease-out;
+}
+
+/* 마지막 버블 - 우측 상단 radius 제거 */
+.bubble.sent.merged-last {
+  border-top-right-radius: 0px;
+  margin-bottom: 15px !important;
+  -webkit-animation: mergeFlashSent 0.6s ease-out;
+  animation: mergeFlashSent 0.6s ease-out;
+}
+
+/* ========================================
+   🕐 시간 표시 스타일
+   - 받은 메시지: 우측 하단
+   - 보낸 메시지: 좌측 하단
+   ======================================== */
+.bubble-time {
+  position: absolute;
+  bottom: 0;
+  font-size: 15px;
+  color: #CCCCCC;
+  white-space: nowrap;
+  opacity: 0;
+  animation: fadeInTime 0.3s ease-out 0.3s forwards;
+}
+
+@keyframes fadeInTime {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 받은 메시지 - 우측 하단 */
+.bubble-time.received {
+  right: -40px;
+}
+
+/* 보낸 메시지 - 좌측 하단 */
+.bubble-time.sent {
+  left: -40px;
+}
+
+/* ========================================
+   🎨 받은 메시지 합쳐지는 애니메이션
+   - 배경색 반짝 + 스케일 바운스
+   ======================================== */
+@-webkit-keyframes mergeFlashReceived {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    background: #F5F5F7;
+  }
+  20% {
+    -webkit-transform: scale(1.03, 0.97);
+    transform: scale(1.03, 0.97);
+    background: #ffffff;  /* 반짝! 밝아짐 */
+  }
+  40% {
+    -webkit-transform: scale(0.98, 1.02);
+    transform: scale(0.98, 1.02);
+    background: #e8e8ea;  /* 살짝 어두워짐 */
+  }
+  60% {
+    -webkit-transform: scale(1.01, 0.99);
+    transform: scale(1.01, 0.99);
+    background: #F5F5F7;
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    background: #F5F5F7;
+  }
+}
+
+@keyframes mergeFlashReceived {
+  0% {
+    transform: scale(1);
+    background: #F5F5F7;
+  }
+  20% {
+    transform: scale(1.03, 0.97);
+    background: #ffffff;  /* 반짝! 밝아짐 */
+  }
+  40% {
+    transform: scale(0.98, 1.02);
+    background: #e8e8ea;  /* 살짝 어두워짐 */
+  }
+  60% {
+    transform: scale(1.01, 0.99);
+    background: #F5F5F7;
+  }
+  100% {
+    transform: scale(1);
+    background: #F5F5F7;
+  }
+}
+
+/* ========================================
+   🎨 보낸 메시지 합쳐지는 애니메이션
+   - 배경색 반짝 + 스케일 바운스
+   ======================================== */
+@-webkit-keyframes mergeFlashSent {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    background: #c8ff00;
+  }
+  20% {
+    -webkit-transform: scale(1.03, 0.97);
+    transform: scale(1.03, 0.97);
+    background: #e0ff66;  /* 반짝! 밝아짐 */
+  }
+  40% {
+    -webkit-transform: scale(0.98, 1.02);
+    transform: scale(0.98, 1.02);
+    background: #b8e600;  /* 살짝 어두워짐 */
+  }
+  60% {
+    -webkit-transform: scale(1.01, 0.99);
+    transform: scale(1.01, 0.99);
+    background: #c8ff00;
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    background: #c8ff00;
+  }
+}
+
+@keyframes mergeFlashSent {
+  0% {
+    transform: scale(1);
+    background: #c8ff00;
+  }
+  20% {
+    transform: scale(1.03, 0.97);
+    background: #e0ff66;  /* 반짝! 밝아짐 */
+  }
+  40% {
+    transform: scale(0.98, 1.02);
+    background: #b8e600;  /* 살짝 어두워짐 */
+  }
+  60% {
+    transform: scale(1.01, 0.99);
+    background: #c8ff00;
+  }
+  100% {
+    transform: scale(1);
+    background: #c8ff00;
+  }
+}
+
+/* ========================================
+   입력 영역 (하단)
+   - 입력창과 버튼이 하나의 컨테이너 안에 배치
+   ======================================== */
+.input-area {
+  display: flex;
+  align-items: center;
+  margin: 10px 30px 30px 30px;
+  padding: 12px 12px 12px 22px;   /* 🎨 내부 여백 - 수정 가능 */
+  z-index: 10;
+  border-radius: 50px;
+  background: #F5F5F7;            /* 🎨 입력창 배경색 - 수정 가능 */
+}
+
+/* ========================================
+   텍스트 입력창 스타일
+   - 배경 투명, 컨테이너 배경색 사용
+   ======================================== */
+.input-area input {
+  flex: 1;
+  min-width: 0;
+  padding: 15px 10px;
+  border: none;
+  background: transparent;        /* 배경 투명 */
+  color: #000;
+  font-size: 22px;                /* 🎨 글자 크기 - 수정 가능 */
+  outline: none;
+}
+
+/* 플레이스홀더 스타일 */
+.input-area input::placeholder {
+  color: #999;
+}
+
+/* ========================================
+   전송 버튼 스타일 (+ 아이콘)
+   - 입력 필드 안에 위치
+   - 키보드 열림/호버 시 아이콘 변경
+   ======================================== */
+.input-area button {
+  width: 52px;                    /* 🎨 버튼 크기 - 수정 가능 */
+  height: 52px;
+  min-width: 52px;                /* 크기 고정 */
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;             /* 아이콘 겹치기 위해 */
+  transition: transform 0.2s, background 0.2s;
+}
+
+/* 아이콘 공통 스타일 */
+.input-area button img {
+  width: 44px;                    /* 🎨 아이콘 크기 - 수정 가능 */
+  height: 44px;
+  position: absolute;             /* 겹치기 */
+  transition: 
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 🎨 Plus 아이콘 - 초기 상태 (보임) */
+.input-area button .icon-plus {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* 🎨 Send 아이콘 - 초기 상태 (숨김) */
+.input-area button .icon-send {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+/* ========================================
+   키보드 열림 시 아이콘 전환
+   ======================================== */
+.device-frame.keyboard-open .input-area button .icon-plus {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+.device-frame.keyboard-open .input-area button .icon-send {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* ========================================
+   버튼 호버 시 아이콘 전환
+   ======================================== */
+.input-area button:hover .icon-plus {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+.input-area button:hover .icon-send {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* 버튼 호버 효과 */
+.input-area button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* 버튼 클릭 효과 */
+.input-area button:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   메타볼 SVG 패스 스타일
+   ======================================== */
+.metaball-path {
+  fill: none;
+  stroke: none;
+}
+
+/* 🎨 보낸 메시지 연결부 색상 */
+.metaball-path.sent {
+  fill: #c8ff00;
+}
+
+/* 🎨 받은 메시지 연결부 색상 */
+.metaball-path.received {
+  fill: #f0f0f0;
+}
+
+/* ========================================
+   🌉 브릿지 효과 (Bridge Effect)
+   - 길이가 다른 received 버블을 연결하는 효과
+   - 짧은 버블의 오른쪽에서 긴 버블 방향으로 이어짐
+   ======================================== */
+
+/* 브릿지 CSS 변수 기본값 */
+.bubble.received.bridge {
+  --bridge-size: 0px;
+}
+
+/* 브릿지 공통 스타일 - 서서히 나타나는 효과 */
+.bubble.received.bridge-down::after,
+.bubble.received.bridge-up::after {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.bubble.received.bridge-down.bridge-visible::after,
+.bubble.received.bridge-up.bridge-visible::after {
+  opacity: 1;
+}
+
+/* 아래로 향하는 브릿지 (현재 버블이 다음 버블보다 짧을 때) */
+/* 짧은 버블의 오른쪽 아래 모서리 바깥에 위치 */
+.bubble.received.bridge-down::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: calc(-1 * var(--bridge-size));  /* 버블 오른쪽 바깥으로 이동 */
+  width: var(--bridge-size);
+  height: var(--bridge-size);
+  /* 🔴 확인용 빨간색 - 오른쪽 위가 오목한 곡선 */
+  background: radial-gradient(circle at 100% 0%, transparent var(--bridge-size), #F5F5F7 var(--bridge-size));
+  z-index: 1;
+}
+
+/* 브릿지-다운의 오른쪽 아래 모서리는 0 */
+.bubble.received.bridge-down {
+  border-bottom-right-radius: 0 !important;
+}
+
+/* 위로 향하는 브릿지 (현재 버블이 이전 버블보다 짧을 때) */
+/* 짧은 버블의 오른쪽 위 모서리 바깥에 위치 */
+.bubble.received.bridge-up::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: calc(-1 * var(--bridge-size));  /* 버블 오른쪽 바깥으로 이동 */
+  width: var(--bridge-size);
+  height: var(--bridge-size);
+  /* 🔴 확인용 빨간색 - 오른쪽 아래가 오목한 곡선 */
+  background: radial-gradient(circle at 100% 100%, transparent var(--bridge-size), #F5F5F7 var(--bridge-size));
+  z-index: 1;
+}
+
+/* 브릿지-업의 오른쪽 위 모서리는 0 */
+.bubble.received.bridge-up {
+  border-top-right-radius: 0 !important;
+}
