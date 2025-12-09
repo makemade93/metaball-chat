@@ -81,18 +81,10 @@ class MetaballChat {
     /* ========================================
        모바일 visualViewport 대응
        - 실제 키보드가 올라올 때 viewport 크기 변화 감지
+       - CSS 변수로 실제 viewport 높이 전달
        - iOS/Android 모두 대응
        ======================================== */
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        // 키보드가 올라오면 viewport 높이가 줄어듦
-        const isKeyboardOpen = window.visualViewport.height < window.innerHeight * 0.75;
-        
-        if (isKeyboardOpen) {
-          this.deviceFrame.classList.add('keyboard-open');
-        }
-      });
-    }
+    this.setupMobileViewport();
 
     /* ========================================
        초기 메시지 추가
@@ -417,6 +409,55 @@ class MetaballChat {
     }
 
     return groups;
+  }
+
+  /* ========================================
+     📱 모바일 viewport 설정
+     - visualViewport API로 실제 가용 높이 계산
+     - 키보드가 올라와도 chat-container 크기 유지
+     ======================================== */
+  setupMobileViewport() {
+    // 모바일 체크 (480px 이하)
+    const isMobile = () => window.innerWidth <= 480;
+    
+    // CSS 변수로 viewport 높이 설정
+    const setViewportHeight = () => {
+      if (!isMobile()) return;
+      
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty('--viewport-height', `${vh}px`);
+    };
+    
+    // 초기 설정
+    setViewportHeight();
+    
+    if (window.visualViewport) {
+      // visualViewport resize 이벤트
+      window.visualViewport.addEventListener('resize', () => {
+        if (!isMobile()) return;
+        
+        const viewportHeight = window.visualViewport.height;
+        const windowHeight = window.innerHeight;
+        const keyboardHeight = windowHeight - viewportHeight;
+        
+        // CSS 변수 업데이트
+        document.documentElement.style.setProperty('--viewport-height', `${viewportHeight}px`);
+        
+        // 키보드가 100px 이상 올라왔으면 keyboard-open
+        if (keyboardHeight > 100) {
+          this.deviceFrame.classList.add('keyboard-open');
+        }
+      });
+      
+      // scroll 이벤트 (iOS에서 필요)
+      window.visualViewport.addEventListener('scroll', () => {
+        if (!isMobile()) return;
+        setViewportHeight();
+      });
+    }
+    
+    // 일반 resize 이벤트 (fallback)
+    window.addEventListener('resize', setViewportHeight);
   }
 }
 

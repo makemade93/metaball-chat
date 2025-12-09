@@ -224,9 +224,12 @@ body {
     background: #000000;
     padding: 0;
     overflow: hidden;
-    /* iOS Safari 키보드 대응 */
-    height: 100dvh;
-    height: 100vh; /* fallback */
+    height: 100%;
+  }
+  
+  /* CSS 변수로 viewport 높이 관리 */
+  :root {
+    --viewport-height: 100vh;
   }
   
   .device-container {
@@ -234,8 +237,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100dvh;
-    height: 100vh; /* fallback */
+    height: var(--viewport-height, 100vh);
     transform: none !important;
     border: none;
     border-radius: 0;
@@ -250,38 +252,46 @@ body {
   .device-frame {
     width: 100%;
     flex: 1;
-    height: auto;
+    height: 100%;
     border-radius: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;    /* chat-container 가운데 정렬 */
+    justify-content: center;
     align-items: center;
+    overflow: hidden;
   }
   
   /* 키보드 열리면 아래로 정렬 */
   .device-frame.keyboard-open {
     justify-content: flex-end;
-    padding-bottom: 0;
   }
   
   .chat-container {
     width: 100%;
-    height: auto;
-    min-height: 480px;
-    max-height: 85dvh;
-    max-height: 85vh; /* fallback */
-    flex: none;
+    flex: 0 1 auto;
+    min-height: 300px;
+    max-height: 85%;
     border-radius: 60px;
     margin: 0;
-    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    transition: max-height 0.2s ease, border-radius 0.2s ease;
   }
   
   /* 키보드 열렸을 때 chat-container */
   .device-frame.keyboard-open .chat-container {
+    flex: 1;
     max-height: 100%;
-    height: 100%;
-    margin: 0;
+    min-height: 0;
+    border-radius: 50px 50px 0 0;
+  }
+  
+  /* messages 영역만 줄어들도록 */
+  .device-frame.keyboard-open .messages-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
   
   .footer {
@@ -297,11 +307,6 @@ body {
   /* 키보드 열리면 footer 숨김 */
   .device-frame.keyboard-open .footer {
     display: none;
-  }
-  
-  /* 모바일 input 패딩 조절 */
-  .input-area input {
-    padding: 15px 10px 15px 24px !important;
   }
 }
 
@@ -784,7 +789,7 @@ body {
 .input-area input {
   flex: 1;
   min-width: 0;
-  padding: 15px 10px;
+  padding: 15px 10px 15px 24px;   /* 왼쪽 패딩 24px */
   border: none;
   background: transparent;        /* 배경 투명 */
   color: #000;
