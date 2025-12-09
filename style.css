@@ -269,12 +269,12 @@ body {
   }
   
   .chat-container {
-    width: 100%;
+    width: calc(100% - 20px);     /* 좌우 10px씩 여백 */
     flex: 1 1 auto;               /* 남은 공간 차지하되 줄어들 수 있음 */
     min-height: 0;
     max-height: none;
-    border-radius: 0 !important;
-    margin: 0;
+    border-radius: 40px !important;  /* 둥근 모서리 */
+    margin: 10px;                 /* 상하좌우 10px 마진 */
     display: flex;
     flex-direction: column;
     overflow: hidden;
